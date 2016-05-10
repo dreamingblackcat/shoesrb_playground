@@ -1,4 +1,7 @@
-# Rabbit Module
+# encoding: utf-8
+
+require 'json'
+
 module Rabbit
   # Rabbit Convert Class
   # Create an instance as follow
@@ -33,28 +36,32 @@ Shoes.app :width => APP_WIDTH, :height => APP_HEIGHT do
   @rabbit = Rabbit::Converter.new
   @uni_edit_box = nil
   @zg_edit_box = nil
+  @zg_convert_button = nil
+  @uni_convert_button = nil
 
   stack :width => APP_WIDTH, :margin => 6, :height => APP_HEIGHT do
+    @section_width = (APP_WIDTH / 2) - 6
     flow do
-      @section_width = (APP_WIDTH / 2) - 6
       stack :width => @section_width, :margin => 25 do
         para "Unicode"
-        @uni_edit_box = edit_box :width => @section_width - 50, :height => APP_HEIGHT - 72, :scroll => true
+        @uni_edit_box = edit_box :width => @section_width - 50, :height => APP_HEIGHT - 172, :scroll => true
+        @zg_convert_button = button "Convert To Zawgyi"
       end
       stack :width => @section_width, :margin => 25 do
         para "Zawgyi"
-        @zg_edit_box = edit_box :width => @section_width - 50, :height => APP_HEIGHT - 72, :scroll => true
-      end
-    end
-    flow :margin => APP_WIDTH / 3 do
-      stack :width => APP_WIDTH / 3 do
-        button "Convert"
+        @zg_edit_box = edit_box :width => @section_width - 50, :height => APP_HEIGHT - 172, :scroll => true, :font => "Zawgyi-One"
+        @uni_convert_button = button "Convert To Unicode"
       end
     end
   end  
 
-  @uni_edit_box.change do |uni|
-    uni_text = uni.text
-    @zg_edit_box.text = uni.text
+  @zg_convert_button.click do |btn|
+    uni_text = @uni_edit_box.text
+    @zg_edit_box.text = @rabbit.uni2zg(uni_text.to_s.force_encoding("UTF-8"))
+  end
+
+  @uni_convert_button.click do |btn|
+    zg_text = @zg_edit_box.text
+    @uni_edit_box.text = @rabbit.zg2uni(zg_text.to_s.force_encoding("UTF-8"))
   end
 end
